@@ -16,7 +16,7 @@ RUN git clone https://github.com/SWE-agent/SWE-agent.git /app
 
 # Install dependencies including 'rich' and other commonly needed packages
 RUN python -m pip install --upgrade pip && \
-    pip install GitPython ghapi litellm pydantic-settings rich typer colorama pyyaml && \
+    pip install GitPython colorama ghapi litellm pydantic-settings pyyaml rich typer && \
     pip install --editable . && echo "Installation succeeded"
 
 # Set the BUILD_VERSION argument with a default value
