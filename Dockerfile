@@ -1,27 +1,24 @@
-# Use Python 3.11 instead of 3.9 as SWE-agent requires Python 3.11 or higher
+# Base image
 FROM python:3.11-slim
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Install git and build dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install system utilities
+RUN apt-get update && apt-get install -y git build-essential \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Clone the SWE-agent repository
+# Clone SWE-agent code
 RUN git clone https://github.com/SWE-agent/SWE-agent.git /app
 
-# Install dependencies including 'rich' and other commonly needed packages
+# Install Python dependencies
 RUN python -m pip install --upgrade pip && \
     pip install GitPython colorama ghapi litellm pydantic-settings pyyaml rich typer && \
-    pip install --editable . && echo "Installation succeeded"
+    pip install --editable .
 
-# Set the BUILD_VERSION argument with a default value
+# Default build version
 ARG BUILD_VERSION=1.0.0
 ENV BUILD_VERSION=${BUILD_VERSION}
 
-# Set the default command to run when the container starts using the installed entrypoint
+# Default command
 CMD ["sweagent", "--help"]
