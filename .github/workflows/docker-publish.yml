@@ -66,7 +66,7 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        docker buildx build -f DeveLanCacheUI_Backend/Dockerfile \
+        docker buildx build -f Dockerfile \
           --build-arg BUILD_VERSION=${{steps.tags.outputs.version}} \
           --platform linux/arm64,linux/amd64 \
           ${{steps.tags.outputs.tags}} \
