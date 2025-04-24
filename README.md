@@ -14,12 +14,13 @@ docker run --rm -it \
     --agent.model.name=azure/o4-mini-blah \
     --agent.model.api_base=https://davy-m9vcs10m-eastus2.cognitiveservices.azure.com/ \
     --agent.model.api_version=2025-01-01-preview \
+	--actions.open_pr=true \
     --env.repo.github_url=https://github.com/devedse/DeveLanCacheUI_Backend \
     --problem_statement.github_url=https://github.com/devedse/DeveLanCacheUI_Backend/issues/64
 ```
 
 You could add:
---actions.open_pr \
+	--actions.open_pr=true \
 
 
 Testing some stuff that doesn't work:
