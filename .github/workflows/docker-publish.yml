@@ -47,18 +47,27 @@ jobs:
       id: tags
       run: |
         VERSION=1.0.${{needs.generate_version_number.outputs.build_number}}
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        echo Version: $VERSION
+        echo github.ref: ${{ github.ref }}
+        echo github.actor: ${{ github.actor }}
+        echo branch name: ${GITHUB_REF#refs/heads/}
+        BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')
+        echo parsed branch name: ${BRANCH_NAME}
 
-        if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
-          echo "TAGS=-t devedse/devesweagents:${VERSION} -t devedse/devesweagents:latest" >> $GITHUB_ENV
-        else
-          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')
-          echo "TAGS=-t devedse/devesweagents:${VERSION} -t devedse/devesweagents:beta_${BRANCH_NAME}" >> $GITHUB_ENV
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+
+        if [[ "${{ github.ref }}" == 'refs/heads/master' ]]; then
+          echo "TAGS=-t devedse/devesweagents:${VERSION} -t devedse/devesweagents:latest -t devedse/devesweagents:beta_nightly" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.actor }}" == 'dependabot[bot]' ]]; then
+          echo "TAGS=-t devedse/devesweagents:beta_${BRANCH_NAME}" >> $GITHUB_OUTPUT
+        else 
+          echo "TAGS=-t devedse/devesweagents:beta_${BRANCH_NAME} -t devedse/devesweagents:beta_nightly" >> $GITHUB_OUTPUT
         fi
 
     - name: Build and Push Docker Image
       run: |
-        docker buildx build --platform linux/arm64,linux/amd64 \
-          --build-arg BUILD_VERSION=${{ env.VERSION }} \
-          ${{ env.TAGS }} \
-          --push .
+        docker buildx build -f DeveLanCacheUI_Backend/Dockerfile \
+          --build-arg BUILD_VERSION=${{steps.tags.outputs.version}} \
+          --platform linux/arm64,linux/amd64 \
+          ${{steps.tags.outputs.tags}} \
+          ${{ (github.event_name != 'pull_request' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)) && '--push' || '' }} .
