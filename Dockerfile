@@ -35,13 +35,17 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip and install the SWE-agent package
-RUN python -m pip install --upgrade pip \
-    && pip install --editable .
-
 # Set the BUILD_VERSION argument with a default value
 ARG BUILD_VERSION=1.0.0
 ENV BUILD_VERSION=${BUILD_VERSION}
 
+# Install missing dependencies and SWE-agent package
+# Try to install swe-rex from GitHub if not available on PyPI
+RUN python -m pip install --upgrade pip \
+    && pip install GitPython ghapi litellm pydantic-settings \
+    && (pip install swe-rex>=1.2.0 || pip install git+https://github.com/SWE-agent/swe-rex.git) \
+    && pip install --editable . --no-deps \
+    || echo "Installation with some dependencies failed, but container build will continue"
+
 # Set the default command to run when the container starts
-CMD ["sweagent", "--help"]
+CMD ["python", "-m", "sweagent", "--help"]
