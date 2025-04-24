@@ -18,6 +18,9 @@ docker run --rm -it \
     --problem_statement.github_url=https://github.com/devedse/DeveLanCacheUI_Backend/issues/64
 ```
 
+You could add:
+--actions.open_pr \
+
 
 Testing some stuff that doesn't work:
 ```
