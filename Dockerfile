@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install nodejs for the web-based GUI (optional but included as per instructions)
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+# Updated to use Node.js 20 LTS as recommended
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
